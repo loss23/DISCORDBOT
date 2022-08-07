@@ -1,8 +1,9 @@
 from flask import Flask
 from threading import Thread
 from discord.ext import commands
-import metronome_loop
+import keep_alive #don't forget to import the file!
 import discord
+import os
 
 bot = commands.Bot(
     command_prefix="TW",
@@ -19,6 +20,19 @@ def main():
 def run():
   app.run(host="0.0.0.0", port=8000)
 
-def keep_alive():
-  server = Thread(target=run)
-  server.start()
+
+client = discord.Client()
+
+@client.event
+async def on_message(message):
+	if message.author == client.user:
+		return
+
+	if message.content.startswith('!ping'):
+		await message.channel.send('Pong!')
+
+# Secret
+my_secret = "Key"
+
+keep_alive.keep_alive()
+client.run(os.environ(my_secret))
